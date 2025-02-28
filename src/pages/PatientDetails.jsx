@@ -38,7 +38,7 @@ const PatientDetails = () => {
 
     return (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-            <div className="w-full max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md">
+            <div className="w-full max-w-lg mx-auto bg-white p-6 border border-gray-300 rounded-lg shadow-md">
                 <h2 className="text-2xl font-bold text-center mb-4">Patient Details</h2>
                 <div className="flex justify-between mb-4">
                     {steps.map((step, index) => (
@@ -57,15 +57,15 @@ const PatientDetails = () => {
                     {currentStep === 0 && (
                         <div className="space-y-4">
                             <div>
-                                <label className="block font-medium">Full Name</label>
+                                <label className="block font-bold">Full Name</label>
                                 <input id="name" value={patientDetails.name} onChange={handleChange} className="w-full border p-2 rounded-md" required />
                             </div>
                             <div>
-                                <label className="block font-medium">Age</label>
+                                <label className="block font-bold">Age</label>
                                 <input id="age" type="number" value={patientDetails.age} onChange={handleChange} className="w-full border p-2 rounded-md" required />
                             </div>
                             <div>
-                                <label className="block font-medium">Gender</label>
+                                <label className="block font-bold">Gender</label>
                                 <div className="flex gap-4">
                                     <label>
                                         <input type="radio" name="gender" id="gender" value="male" checked={patientDetails.gender === "male"} onChange={handleChange} /> Male
@@ -79,24 +79,24 @@ const PatientDetails = () => {
                                 </div>
                             </div>
                             <div>
-                                <label className="block font-medium">Blood Type</label>
+                                <label className="block font-bold">Blood Type</label>
                                 <input id="bloodType" value={patientDetails.bloodType} onChange={handleChange} className="w-full border p-2 rounded-md" required />
                             </div>
                             <div>
-                                <label className="block font-medium">Contact Number</label>
+                                <label className="block font-bold">Contact Number</label>
                                 <input id="contactNumber" type="tel" value={patientDetails.contactNumber} onChange={handleChange} className="w-full border p-2 rounded-md" required />
                             </div>
                         </div>
                     )}
                     {currentStep === 1 && (
                         <div>
-                            <label className="block font-medium">Medical History</label>
+                            <label className="block font-bold">Medical History</label>
                             <textarea id="medicalHistory" value={patientDetails.medicalHistory} onChange={handleChange} className="w-full h-32 border p-2 rounded-md" required></textarea>
                         </div>
                     )}
                     {currentStep === 2 && (
                         <div>
-                            <h3 className="text-lg font-semibold mb-4">Confirm Patient Details</h3>
+                            <h3 className="text-lg font-bold mb-4">Confirm Patient Details</h3>
                             <p><strong>Name:</strong> {patientDetails.name}</p>
                             <p><strong>Age:</strong> {patientDetails.age}</p>
                             <p><strong>Gender:</strong> {patientDetails.gender}</p>
