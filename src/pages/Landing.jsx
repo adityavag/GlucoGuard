@@ -1,4 +1,4 @@
-import Lottie from "react-lottie";
+import Lottie from "lottie-react";
 import { Link } from "react-router-dom";
 import Art from "../assets/Art.json"
 const Landing = () => {
@@ -16,6 +16,7 @@ const Landing = () => {
           </button>
         </Link>
       </div>
+      <Lottie animationData={Art} loop={true} />
     </div>
   );
 }
