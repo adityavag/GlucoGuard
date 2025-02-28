@@ -4,8 +4,10 @@ import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useDropzone } from "react-dropzone";
 import { UploadIcon, XIcon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const ImageUpload = () => {
+    const navigate = useNavigate();
     const [file, setFile] = useState(null);
     const [preview, setPreview] = useState(null);
 
@@ -37,7 +39,8 @@ const ImageUpload = () => {
     };
 
     return (
-        <motion.div
+        <div className="bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 min-h-screen py-24 px-6">
+                <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -88,6 +91,7 @@ const ImageUpload = () => {
                 </form>
             </div>
         </motion.div>
+        </div>
     );
 };
 
