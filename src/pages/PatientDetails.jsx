@@ -1,19 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const PatientDetails = () => {
     const navigate = useNavigate();
     const steps = ["Personal Info", "Medical History", "Confirmation"];
     const [currentStep, setCurrentStep] = useState(0);
-    const [patientDetails, setPatientDetails] = useState({
-        name: "",
-        age: "",
-        gender: "",
-        bloodType: "",
-        contactNumber: "",
-        medicalHistory: "",
-    });
     const [isConfirmed, setIsConfirmed] = useState(false);
+    const [patientDetails, setPatientDetails] = useState(() => {
+        const savedData = localStorage.getItem("patientDetails");
+        return savedData
+            ? JSON.parse(savedData)
+            : { name: "", age: "", gender: "", bloodType: "", email: "", medicalHistory: "" };
+    });
+
+    useEffect(() => {
+        localStorage.setItem("patientDetails", JSON.stringify(patientDetails));
+    }, [patientDetails]);
 
     const handleChange = (e) => {
         setPatientDetails({ ...patientDetails, [e.target.id]: e.target.value });
@@ -34,7 +36,6 @@ const PatientDetails = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (currentStep === steps.length - 1 && isConfirmed) {
-            console.log(patientDetails);
             navigate("/image-upload");
         }
     };
@@ -83,8 +84,8 @@ const PatientDetails = () => {
                                 <input id="bloodType" value={patientDetails.bloodType} onChange={handleChange} className="w-full border p-2 rounded-md" required />
                             </div>
                             <div>
-                                <label className="block font-bold">Contact Number</label>
-                                <input id="contactNumber" type="tel" value={patientDetails.contactNumber} onChange={handleChange} className="w-full border p-2 rounded-md" required />
+                                <label className="block font-bold">Email</label>
+                                <input id="email" type="email" value={patientDetails.email} onChange={handleChange} className="w-full border p-2 rounded-md" required />
                             </div>
                         </div>
                     )}
@@ -101,7 +102,7 @@ const PatientDetails = () => {
                             <p><strong>Age:</strong> {patientDetails.age}</p>
                             <p><strong>Gender:</strong> {patientDetails.gender}</p>
                             <p><strong>Blood Type:</strong> {patientDetails.bloodType}</p>
-                            <p><strong>Contact Number:</strong> {patientDetails.contactNumber}</p>
+                            <p><strong>Email:</strong> {patientDetails.email}</p>
                             <p><strong>Medical History:</strong> {patientDetails.medicalHistory}</p>
                             <label className="flex items-center mt-4">
                                 <input type="checkbox" checked={isConfirmed} onChange={() => setIsConfirmed(!isConfirmed)} className="mr-2" />
