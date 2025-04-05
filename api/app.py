@@ -61,26 +61,90 @@ def preprocess_image(image, target_size=(224, 224)):
         app.logger.error(f"Image preprocessing failed: {str(e)}")
         raise
 
+# from reportlab.pdfgen import canvas
+# from reportlab.lib.pagesizes import letter
+from io import BytesIO
+from datetime import datetime
+
+from reportlab.lib.colors import HexColor
+
 def create_pdf_report(patient_data, prediction):
     buffer = BytesIO()
     c = canvas.Canvas(buffer, pagesize=letter)
-    
+
+    # Theme Colors
+    purple = HexColor("#A855F7")
+    purple_bg = HexColor("#F5F3FF")
+    gray_border = HexColor("#D1D5DB")
+
+    # Margins
+    margin_x = 72
+    y = 750
+
+    # Header Box
+    c.setFillColor(purple_bg)
+    c.rect(margin_x - 10, y - 20, 470, 30, fill=True, stroke=False)
+    c.setFillColor(purple)
     c.setFont("Helvetica-Bold", 16)
-    c.drawString(72, 700, "Diabetic Retinopathy Report")
+    c.drawString(margin_x, y, "Diabetic Retinopathy Report")
     
+    # Reset to normal text
+    c.setFillColor("black")
+    y -= 40
     c.setFont("Helvetica", 12)
-    y_position = 650
-    c.drawString(72, y_position, f"Patient Name: {patient_data['name']}")
-    c.drawString(72, y_position-30, f"Age: {patient_data['age']}")
-    c.drawString(72, y_position-60, f"DR Grade: {prediction['dr_grade']}")
-    c.drawString(72, y_position-90, f"Confidence: {prediction['confidence']*100:.2f}%")
-    
+    c.drawString(margin_x, y, f"Dear {patient_data['name']},")
+    y -= 25
+    c.drawString(margin_x, y, "We are writing to inform you about the results of your recent eye screening using")
+    y -= 15
+    c.drawString(margin_x, y, "automated diabetic retinopathy detection technology. Please find the details below:")
+
+    # Patient Info
+    y -= 40
+    c.setFont("Helvetica-Bold", 12)
+    c.setFillColor(purple)
+    c.drawString(margin_x, y, "Patient Details:")
+    c.setFillColor("black")
+    c.setFont("Helvetica", 12)
+    y -= 20
+    c.drawString(margin_x, y, f"Name       : {patient_data['name']}")
+    y -= 20
+    c.drawString(margin_x, y, f"Age        : {patient_data['age']}")
+    y -= 20
+    c.drawString(margin_x, y, f"DR Grade   : {prediction['dr_grade']}")
+    y -= 20
+    c.drawString(margin_x, y, f"Confidence : {prediction['confidence']*100:.2f}%")
+
+    # DR Grade Reference Table
+    y -= 40
+    c.setFont("Helvetica-Bold", 12)
+    c.setFillColor(purple)
+    c.drawString(margin_x, y, "DR Grade Reference:")
+    c.setFont("Helvetica", 11)
+    c.setFillColor("black")
+    y -= 20
+    c.drawString(margin_x, y, "Grade 0: No DR")
+    y -= 15
+    c.drawString(margin_x, y, "Grade 1: Mild NPDR (Non-Proliferative Diabetic Retinopathy)")
+    y -= 15
+    c.drawString(margin_x, y, "Grade 2: Moderate NPDR")
+    y -= 15
+    c.drawString(margin_x, y, "Grade 3: Severe NPDR")
+    y -= 15
+    c.drawString(margin_x, y, "Grade 4: Proliferative DR")
+
+    # Footer Note
+    y -= 40
     c.setFont("Helvetica-Oblique", 10)
-    c.drawString(72, 100, "Note: This report is generated automatically. Consult a ophthalmologist for detailed analysis.")
-    
+    c.drawString(margin_x, y, "Note: This is a computer-generated report. Please consult an ophthalmologist for expert review.")
+
+    # Light bottom border
+    c.setStrokeColor(gray_border)
+    c.line(margin_x - 10, 50, 540, 50)
+
     c.save()
     buffer.seek(0)
     return buffer
+
 
 def send_email(receiver_email, pdf_buffer, patient_name):
     msg = MIMEMultipart()
