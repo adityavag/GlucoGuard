@@ -4,6 +4,8 @@ import { useDropzone } from "react-dropzone";
 import { UploadIcon, XIcon } from "lucide-react";
 import axios from "axios";
 
+import validateRetinalLikeImage from "../utils/ImageValidation";
+
 const ImageUpload = () => {
     const [file, setFile] = useState(null);
     const [preview, setPreview] = useState(null);
@@ -34,37 +36,49 @@ const ImageUpload = () => {
 
     const handleAnalyze = async (e) => {
         e.preventDefault();
+
         if (!file) {
             alert("Please select an image before analyzing.");
             return;
         }
 
-        const formData = new FormData();
-        formData.append("image", file);
-        formData.append("name", patientDetails.name);
-        formData.append("email", patientDetails.email);
-        formData.append("age", patientDetails.age);
-
         setLoading(true);
-        try {
-            const res = await axios.post("http://127.0.0.1:5000/predict", formData, {
-                headers: { "Content-Type": "multipart/form-data" },
-            });
-            setResponse(res.data);
-        } catch (error) {
-            console.error("Error analyzing image:", error);
-            setResponse({ error: "Failed to analyze image." });
-        }
-        setLoading(false);
+
+        validateRetinalLikeImage(file, async (isValid) => {
+            if (!isValid) {
+                setLoading(false);
+                alert("Invalid image. Please upload a valid retinal (fundus) image.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("image", file);
+            formData.append("name", patientDetails.name);
+            formData.append("email", patientDetails.email);
+            formData.append("age", patientDetails.age);
+
+            try {
+                const res = await axios.post("http://127.0.0.1:5000/predict", formData, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                });
+                setResponse(res.data);
+            } catch (error) {
+                console.error("Error analyzing image:", error);
+                setResponse({ error: "Failed to analyze image." });
+            }
+
+            setLoading(false);
+        });
     };
 
     const removeFile = () => {
         setFile(null);
         setPreview(null);
     };
+
     window.addEventListener('load', () => {
         localStorage.clear();
-      });
+    });
 
     return (
         <div className="bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 min-h-screen py-24 px-6">
@@ -123,7 +137,11 @@ const ImageUpload = () => {
                         <div className="mt-4 p-4 bg-white shadow rounded-md text-sm">
                             <h3 className="font-bold">Response:</h3>
                             <pre className="text-gray-600">DR Grade : {JSON.stringify(response["prediction"]["dr_grade"], null, 2)}</pre>
-                            <pre className="text-gray-600">Confidence Level : {JSON.stringify(((response["prediction"]["confidence"])*100).toFixed(2), null, 2)}%</pre>
+                            <pre className="text-gray-600">0-No DR</pre>
+                            <pre className="text-gray-600">1-Mild DR</pre>
+                            <pre className="text-gray-600">2-Moderate</pre>
+                            <pre className="text-gray-600">3-Severe DR</pre>
+                            <pre className="text-gray-600">4-Proliferative DR</pre>
                             <pre className="text-gray-600">Test Report Sent to your registered email.</pre>
                         </div>
                     )}
