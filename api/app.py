@@ -31,7 +31,7 @@ def swish(x):
     return x * tf.sigmoid(x)
 
 model = load_model(
-    "Copy of 2best_modelB3b.h5",
+    "2best_modelB3b.h5",
     custom_objects={
         "FixedDropout": FixedDropout,
         "swish": swish
